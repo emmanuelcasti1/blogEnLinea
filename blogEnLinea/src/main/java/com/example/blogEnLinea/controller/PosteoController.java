@@ -6,6 +6,7 @@ import com.example.blogEnLinea.model.Posteo;
 import com.example.blogEnLinea.service.IAutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,24 +21,27 @@ public class PosteoController {
     @Autowired
     private IAutorService autorService;
 
+    @PreAuthorize("hasAnyRole('ADMIN','AUTOR')")
     @PostMapping
     public ResponseEntity<Posteo> crearPosteo(@RequestBody Posteo posteo) {
         Posteo posteoNuevo = posteoService.crearPosteo(posteo);
         return ResponseEntity.ok(posteoNuevo);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','AUTOR','USER')")
     @GetMapping
     public ResponseEntity<List<Posteo>> listarPosteos() {
         List<Posteo> posteoList = posteoService.traerPosteos();
         return ResponseEntity.ok(posteoList);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','AUTOR','USER')")
     @GetMapping("/{id}")
     public ResponseEntity<Posteo> obtenerPosteo(@PathVariable Long id) {
         Optional<Posteo> posteo = posteoService.traerPosteoPorId(id);
         return posteo.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','AUTOR')")
     @PatchMapping("/{id}")
     public ResponseEntity<Posteo> editarPosteo(@PathVariable Long id, @RequestBody Posteo modificar) {
         Posteo posteo = posteoService.traerPosteoPorId(id).orElse(null);
@@ -52,6 +56,7 @@ public class PosteoController {
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarPosteo(@PathVariable Long id) {
         posteoService.traerPosteoPorId(id).ifPresent(posteo -> posteoService.eliminarPosteo(posteo.getId()));

@@ -6,6 +6,7 @@ import com.example.blogEnLinea.service.IPermisoService;
 import com.example.blogEnLinea.service.IRolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -22,6 +23,7 @@ public class RolController {
     @Autowired
     private IPermisoService permisoService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Rol> crearRol(@RequestBody Rol rol) {
         Set<Permiso> permisoList = new HashSet<>();
@@ -38,18 +40,21 @@ public class RolController {
         return ResponseEntity.ok(rolNuevo);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<Rol>> listarRols() {
         List<Rol> rolList = rolService.traerRoles();
         return ResponseEntity.ok(rolList);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Rol> obtenerRolPorId(@PathVariable Long id) {
         Optional<Rol> rol = rolService.traerRolPorId(id);
         return rol.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<Rol> actualizarRol(@PathVariable Long id, @RequestBody Rol modificar) {
         Rol rol = rolService.traerRolPorId(id).orElse(null);
@@ -74,6 +79,7 @@ public class RolController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarRol(@PathVariable("id") Long id) {
         rolService.traerRolPorId(id).ifPresent(rol -> rolService.eliminarRol(rol.getId()));

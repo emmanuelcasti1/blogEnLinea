@@ -16,25 +16,28 @@ public class PermisoController {
     @Autowired
     private IPermisoService permisoService;
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Permiso> crearPermiso(@RequestBody Permiso permiso) {
         Permiso PermisoNuevo = permisoService.crearPermiso(permiso);
         return ResponseEntity.ok(PermisoNuevo);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<Permiso>> listarPermisos() {
         List<Permiso> permisoList = permisoService.traerPermisos();
         return ResponseEntity.ok(permisoList);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Permiso> obtenerPermiso(@PathVariable Long id) {
         Optional <Permiso> permiso = permisoService.traerPermisoPorId(id);
         return permiso.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<Permiso> modificarPermiso(@PathVariable Long id, @RequestBody Permiso modificar) {
         Permiso permisoExistente = permisoService.traerPermisoPorId(id).orElse(null);
@@ -46,6 +49,7 @@ public class PermisoController {
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarPermiso(@PathVariable Long id) {
         permisoService.traerPermisoPorId(id).ifPresent(permiso -> permisoService.eliminarPermiso(permiso.getId()));
