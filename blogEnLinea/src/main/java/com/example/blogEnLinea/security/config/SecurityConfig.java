@@ -35,7 +35,8 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults())
+                .oauth2Login(Customizer.withDefaults())
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
                 .build();
     }
